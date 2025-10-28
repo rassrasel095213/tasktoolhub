@@ -1,62 +1,62 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🛠️ Task Tool Hub
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+A comprehensive collection of online calculators and converters for everyday use. Task Tool Hub provides professional tools for calculations, conversions, and data analysis - all in one place.
 
-## ✨ Technology Stack
+## ✨ Features
 
-This scaffold provides a robust foundation built with:
+Task Tool Hub includes 20+ professional tools:
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+### 🧮 Calculators
+- **Basic Calculator** - Standard arithmetic operations (+, -, ×, ÷)
+- **Scientific Calculator** - Advanced math functions (sin, cos, log, etc.)
+- **Percentage Calculator** - Calculate percentages and percentage changes
+- **Age Calculator** - Calculate age from date of birth
+- **Date Calculator** - Calculate days, months, years between dates
+- **Electrical Calculator** - Calculate resistance, voltage, and current
+- **Profit Sharing Calculator** - Calculate profit splits and distributions
+- **Compound Interest Calculator** - Calculate compound interest and returns
+- **Percentile Calculator** - Calculate percentiles and score rankings
+- **Graphing Calculator** - Advanced graphing like Desmos
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+### 🔄 Converters
+- **Unit Converter** - Convert length, weight, time, temperature and more
+- **Currency Converter** - Convert between different currencies
+- **Time Zone Converter** - Convert between different time zones
+- **Metric to Imperial Converter** - Convert between metric and imperial units
+- **Data Storage Converter** - Convert KB, MB, GB, TB
+- **Color Converter** - Convert HEX, RGB, HSL color formats
+- **Image Size Converter** - Resize and convert image dimensions
+- **Matrix Calculator** - Matrix and vector operations
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+### 📊 Data Visualization
+- **Charts & Graphs** - Create beautiful charts and graphs
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Axios** - Promise-based HTTP client
+## 🎨 Design Features
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+- **Modern & Professional** - Clean, intuitive interface
+- **Responsive Design** - Works perfectly on all devices
+- **Brand Colors** - #0a233b (primary), #0288d1 (secondary)
+- **SEO Optimized** - Each tool optimized for search engines
+- **AdSense Ready** - Structured for ad integration
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+## 🚀 Technology Stack
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
+- **⚡ Next.js 15** - React framework with App Router
+- **📘 TypeScript 5** - Type-safe development
+- **🎨 Tailwind CSS 4** - Modern styling
+- **🧩 shadcn/ui** - High-quality UI components
+- **🎯 Lucide React** - Beautiful icons
+- **📱 Responsive** - Mobile-first design
 
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
+## 🛠️ Installation & Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/rassrasel095213/tasktoolhub.git
+
+# Navigate to the project directory
+cd tasktoolhub
+
 # Install dependencies
 npm install
 
@@ -70,72 +70,92 @@ npm run build
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## 📁 Project Structure
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+├── app/                    # Next.js App Router pages
+│   ├── tools/             # Individual tool pages
+│   │   ├── calculator/    # Basic calculator
+│   │   ├── unit-converter/ # Unit converter
+│   │   ├── percentage/    # Percentage calculator
+│   │   ├── currency/      # Currency converter
+│   │   └── ...            # Other tools
+│   └── page.tsx           # Homepage
+├── components/            # Reusable React components
+│   └── ui/               # shadcn/ui components
+└── lib/                  # Utility functions
 ```
 
-## 🎨 Available Features & Components
+## 🎯 Available Tools
 
-This scaffold includes a comprehensive set of modern web development tools:
+### Calculators
+1. **Calculator** - Basic arithmetic operations
+2. **Percentage Calculator** - Percentage calculations
+3. **Age Calculator** - Calculate age from birth date
+4. **Date Calculator** - Date difference calculations
+5. **Scientific Calculator** - Advanced mathematical functions
+6. **Electrical Calculator** - Electrical calculations
+7. **Profit Sharing Calculator** - Profit distribution
+8. **Compound Interest Calculator** - Interest calculations
+9. **Percentile Calculator** - Statistical calculations
+10. **Graphing Calculator** - Mathematical graphing
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+### Converters
+1. **Unit Converter** - Length, weight, temperature, time
+2. **Currency Converter** - Multi-currency conversion
+3. **Time Zone Converter** - Time zone conversions
+4. **Metric to Imperial Converter** - Unit system conversions
+5. **Data Storage Converter** - Digital storage units
+6. **Color Converter** - Color format conversions
+7. **Image Size Converter** - Image dimension conversions
+8. **Matrix Calculator** - Matrix operations
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+### Data Tools
+1. **Charts & Graphs** - Data visualization
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+## 🔧 Features
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Axios + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+- **Search Functionality** - Find tools quickly with smart suggestions
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **SEO Optimized** - Each tool has proper meta tags and descriptions
+- **Professional UI** - Modern, clean interface with smooth interactions
+- **Client-Side** - All calculations happen in the browser for privacy
+- **Fast Performance** - Optimized for quick loading and smooth interactions
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+## 🌐 Deployment
 
-## 🤝 Get Started with Z.ai
+### Netlify Deployment
+1. Push your code to GitHub
+2. Connect your repository to Netlify
+3. Deploy automatically on push
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+### Manual Deployment
+```bash
+# Build the project
+npm run build
+
+# Deploy the .next folder to your hosting provider
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Author
+
+**Task Tool Hub** is developed and maintained by **Taskkora**.
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+Built with ❤️ for making everyday calculations easier. © 2025 Task Tool Hub by Taskkora

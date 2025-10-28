@@ -1,6 +1,8 @@
 {
-  "name": "nextjs_tailwind_shadcn_ts",
-  "version": "0.1.0",
+  "name": "task-tool-hub",
+  "version": "1.0.0",
+  "description": "Task Tool Hub - A comprehensive collection of online calculators and converters",
+  "author": "Taskkora",
   "private": true,
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
