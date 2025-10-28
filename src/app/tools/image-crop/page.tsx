@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Upload, Download, Crop, Image as ImageIcon, Zap, Shield } from 'lucide-react'
+import { Upload, Download, Crop, Image as ImageIcon, Zap, Shield, Move } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CroppedImage {
@@ -38,6 +38,17 @@ interface CropArea {
   height: number
 }
 
+interface DragState {
+  isDragging: boolean
+  dragType: 'move' | 'resize-tl' | 'resize-tr' | 'resize-bl' | 'resize-br' | null
+  startX: number
+  startY: number
+  startCropX: number
+  startCropY: number
+  startCropWidth: number
+  startCropHeight: number
+}
+
 const PRESET_SIZES = [
   { name: 'Free', width: 0, height: 0 },
   { name: 'Square (1:1)', width: 1, height: 1 },
@@ -48,24 +59,34 @@ const PRESET_SIZES = [
   { name: 'Facebook Cover (16:9)', width: 16, height: 9 },
   { name: 'YouTube Thumbnail (16:9)', width: 16, height: 9 },
   { name: 'Twitter Header (3:1)', width: 3, height: 1 },
+  { name: 'A4 (210:297)', width: 210, height: 297 },
 ]
 
 export default function ImageCrop() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [croppedImage, setCroppedImage] = useState<CroppedImage | null>(null)
-  const [imageUrl, setImageUrl] = useState<string>('')
+  const [imageUrl, setImageUrl] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [cropArea, setCropArea] = useState<CropArea>({ x: 50, y: 50, width: 200, height: 200 })
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [selectedPreset, setSelectedPreset] = useState('Free')
   const [customWidth, setCustomWidth] = useState('')
   const [customHeight, setCustomHeight] = useState('')
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
+  const [scale, setScale] = useState(1)
   
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const dragState = useRef<DragState>({
+    isDragging: false,
+    dragType: null,
+    startX: 0,
+    startY: 0,
+    startCropX: 0,
+    startCropY: 0,
+    startCropWidth: 0,
+    startCropHeight: 0,
+  })
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes'
@@ -92,7 +113,7 @@ export default function ImageCrop() {
       const img = new Image()
       img.onload = () => {
         setImageDimensions({ width: img.width, height: img.height })
-        // Set initial crop area to center
+        // Set initial crop area to center with reasonable size
         const initialSize = Math.min(img.width, img.height) * 0.5
         setCropArea({
           x: (img.width - initialSize) / 2,
@@ -120,12 +141,12 @@ export default function ImageCrop() {
     canvas.width = rect.width
     canvas.height = rect.height
     
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    
     // Calculate scale factor
     const scaleX = canvas.width / img.naturalWidth
     const scaleY = canvas.height / img.naturalHeight
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     
     // Draw semi-transparent overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
@@ -181,36 +202,65 @@ export default function ImageCrop() {
       handleSize,
       handleSize
     )
+
+    // Draw center move handle
+    ctx.fillStyle = '#10b981'
+    ctx.fillRect(
+      (cropArea.x + cropArea.width / 2) * scaleX - handleSize / 2,
+      (cropArea.y + cropArea.height / 2) * scaleY - handleSize / 2,
+      handleSize,
+      handleSize
+    )
   }, [cropArea])
 
   useEffect(() => {
     drawCropArea()
   }, [drawCropArea])
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = canvasRef.current?.getBoundingClientRect()
-    if (!rect || !imageRef.current) return
+  const getCursorType = (x: number, y: number): string => {
+    if (!imageRef.current) return 'default'
     
-    const scaleX = imageRef.current.naturalWidth / rect.width
-    const scaleY = imageRef.current.naturalHeight / rect.height
+    const scaleX = containerRef.current!.clientWidth / imageRef.current.naturalWidth
+    const scaleY = containerRef.current!.clientHeight / imageRef.current.naturalHeight
     
-    const x = (e.clientX - rect.left) * scaleX
-    const y = (e.clientY - rect.top) * scaleY
+    const imgX = x / scaleX
+    const imgY = y / scaleY
     
-    // Check if click is within crop area
-    if (
-      x >= cropArea.x &&
-      x <= cropArea.x + cropArea.width &&
-      y >= cropArea.y &&
-      y <= cropArea.y + cropArea.height
-    ) {
-      setIsDragging(true)
-      setDragStart({ x: x - cropArea.x, y: y - cropArea.y })
+    const handleSize = 8 / scaleX
+    const halfHandle = handleSize / 2
+    
+    // Check corner handles
+    if (Math.abs(imgX - cropArea.x) <= halfHandle && Math.abs(imgY - cropArea.y) <= halfHandle) {
+      return 'nw-resize'
     }
+    if (Math.abs(imgX - (cropArea.x + cropArea.width)) <= halfHandle && Math.abs(imgY - cropArea.y) <= halfHandle) {
+      return 'ne-resize'
+    }
+    if (Math.abs(imgX - cropArea.x) <= halfHandle && Math.abs(imgY - (cropArea.y + cropArea.height)) <= halfHandle) {
+      return 'sw-resize'
+    }
+    if (Math.abs(imgX - (cropArea.x + cropArea.width)) <= halfHandle && Math.abs(imgY - (cropArea.y + cropArea.height)) <= halfHandle) {
+      return 'se-resize'
+    }
+    
+    // Check center move handle
+    const centerX = cropArea.x + cropArea.width / 2
+    const centerY = cropArea.y + cropArea.height / 2
+    if (Math.abs(imgX - centerX) <= halfHandle && Math.abs(imgY - centerY) <= halfHandle) {
+      return 'move'
+    }
+    
+    // Check inside crop area
+    if (imgX >= cropArea.x && imgX <= cropArea.x + cropArea.width &&
+        imgY >= cropArea.y && imgY <= cropArea.y + cropArea.height) {
+      return 'move'
+    }
+    
+    return 'default'
   }
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging || !canvasRef.current || !imageRef.current) return
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !imageRef.current) return
     
     const rect = canvasRef.current.getBoundingClientRect()
     const scaleX = imageRef.current.naturalWidth / rect.width
@@ -219,18 +269,116 @@ export default function ImageCrop() {
     const x = (e.clientX - rect.left) * scaleX
     const y = (e.clientY - rect.top) * scaleY
     
-    const newX = Math.max(0, Math.min(x - dragStart.x, imageRef.current.naturalWidth - cropArea.width))
-    const newY = Math.max(0, Math.min(y - dragStart.y, imageRef.current.naturalHeight - cropArea.height))
+    const handleSize = 8 / scaleX
+    const halfHandle = handleSize / 2
     
-    setCropArea(prev => ({
-      ...prev,
-      x: newX,
-      y: newY
-    }))
+    // Determine drag type
+    let dragType: DragState['dragType'] = null
+    
+    // Check corner handles
+    if (Math.abs(x - cropArea.x) <= halfHandle && Math.abs(y - cropArea.y) <= halfHandle) {
+      dragType = 'resize-tl'
+    } else if (Math.abs(x - (cropArea.x + cropArea.width)) <= halfHandle && Math.abs(y - cropArea.y) <= halfHandle) {
+      dragType = 'resize-tr'
+    } else if (Math.abs(x - cropArea.x) <= halfHandle && Math.abs(y - (cropArea.y + cropArea.height)) <= halfHandle) {
+      dragType = 'resize-bl'
+    } else if (Math.abs(x - (cropArea.x + cropArea.width)) <= halfHandle && Math.abs(y - (cropArea.y + cropArea.height)) <= halfHandle) {
+      dragType = 'resize-br'
+    } else {
+      // Check if inside crop area
+      if (x >= cropArea.x && x <= cropArea.x + cropArea.width &&
+          y >= cropArea.y && y <= cropArea.y + cropArea.height) {
+        dragType = 'move'
+      }
+    }
+    
+    if (dragType) {
+      dragState.current = {
+        isDragging: true,
+        dragType,
+        startX: x,
+        startY: y,
+        startCropX: cropArea.x,
+        startCropY: cropArea.y,
+        startCropWidth: cropArea.width,
+        startCropHeight: cropArea.height,
+      }
+    }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !imageRef.current) return
+    
+    const rect = canvasRef.current.getBoundingClientRect()
+    const scaleX = imageRef.current.naturalWidth / rect.width
+    const scaleY = imageRef.current.naturalHeight / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+    
+    // Update cursor
+    canvasRef.current.style.cursor = getCursorType(e.clientX - rect.left, e.clientY - rect.top)
+    
+    if (!dragState.current.isDragging) return
+    
+    const deltaX = x - dragState.current.startX
+    const deltaY = y - dragState.current.startY
+    
+    let newCropArea = { ...cropArea }
+    
+    switch (dragState.current.dragType) {
+      case 'move':
+        newCropArea.x = Math.max(0, Math.min(dragState.current.startCropX + deltaX, imageRef.current.naturalWidth - cropArea.width))
+        newCropArea.y = Math.max(0, Math.min(dragState.current.startCropY + deltaY, imageRef.current.naturalHeight - cropArea.height))
+        break
+        
+      case 'resize-tl':
+        const newWidthTL = dragState.current.startCropWidth - deltaX
+        const newHeightTL = dragState.current.startCropHeight - deltaY
+        if (newWidthTL > 20 && newHeightTL > 20) {
+          newCropArea.x = Math.max(0, dragState.current.startCropX + deltaX)
+          newCropArea.y = Math.max(0, dragState.current.startCropY + deltaY)
+          newCropArea.width = Math.min(newWidthTL, imageRef.current.naturalWidth - newCropArea.x)
+          newCropArea.height = Math.min(newHeightTL, imageRef.current.naturalHeight - newCropArea.y)
+        }
+        break
+        
+      case 'resize-tr':
+        const newWidthTR = dragState.current.startCropWidth + deltaX
+        const newHeightTR = dragState.current.startCropHeight - deltaY
+        if (newWidthTR > 20 && newHeightTR > 20) {
+          newCropArea.y = Math.max(0, dragState.current.startCropY + deltaY)
+          newCropArea.width = Math.min(newWidthTR, imageRef.current.naturalWidth - cropArea.x)
+          newCropArea.height = Math.min(newHeightTR, imageRef.current.naturalHeight - newCropArea.y)
+        }
+        break
+        
+      case 'resize-bl':
+        const newWidthBL = dragState.current.startCropWidth - deltaX
+        const newHeightBL = dragState.current.startCropHeight + deltaY
+        if (newWidthBL > 20 && newHeightBL > 20) {
+          newCropArea.x = Math.max(0, dragState.current.startCropX + deltaX)
+          newCropArea.width = Math.min(newWidthBL, imageRef.current.naturalWidth - newCropArea.x)
+          newCropArea.height = Math.min(newHeightBL, imageRef.current.naturalHeight - cropArea.y)
+        }
+        break
+        
+      case 'resize-br':
+        const newWidthBR = dragState.current.startCropWidth + deltaX
+        const newHeightBR = dragState.current.startCropHeight + deltaY
+        if (newWidthBR > 20 && newHeightBR > 20) {
+          newCropArea.width = Math.min(newWidthBR, imageRef.current.naturalWidth - cropArea.x)
+          newCropArea.height = Math.min(newHeightBR, imageRef.current.naturalHeight - cropArea.y)
+        }
+        break
+    }
+    
+    setCropArea(newCropArea)
   }
 
   const handleMouseUp = () => {
-    setIsDragging(false)
+    dragState.current.isDragging = false
+    dragState.current.dragType = null
   }
 
   const handlePresetChange = (presetName: string) => {
@@ -375,8 +523,8 @@ export default function ImageCrop() {
             <div className="flex items-center justify-center mb-4">
               <div className="text-5xl mr-4">✂️</div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Image Crop</h1>
-                <p className="text-gray-600 mt-2">Crop images with live preview and custom sizing</p>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Advanced Image Crop</h1>
+                <p className="text-gray-600 mt-2">Interactive image cropping with drag and resize functionality</p>
               </div>
             </div>
           </div>
@@ -386,8 +534,8 @@ export default function ImageCrop() {
             <Card className="text-center">
               <CardContent className="p-4">
                 <Zap className="w-8 h-8 text-blue-900 mx-auto mb-2" />
-                <h3 className="font-semibold">Live Preview</h3>
-                <p className="text-sm text-gray-600">Real-time cropping</p>
+                <h3 className="font-semibold">Interactive Crop</h3>
+                <p className="text-sm text-gray-600">Drag to move & resize</p>
               </CardContent>
             </Card>
             <Card className="text-center">
@@ -411,10 +559,10 @@ export default function ImageCrop() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Crop className="w-5 h-5 mr-2" />
-                Crop Your Image
+                Interactive Image Cropping
               </CardTitle>
               <CardDescription>
-                Upload an image and select the area you want to crop
+                Upload an image and drag to crop. Use corner handles to resize, center to move.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -447,7 +595,7 @@ export default function ImageCrop() {
               {imageUrl && (
                 <div className="space-y-4">
                   {/* Controls */}
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-4 gap-4">
                     <div className="space-y-2">
                       <Label>Preset Sizes</Label>
                       <Select value={selectedPreset} onValueChange={handlePresetChange}>
@@ -485,6 +633,42 @@ export default function ImageCrop() {
                         placeholder="Height"
                       />
                     </div>
+
+                    <div className="space-y-2">
+                      <Label>Quick Actions</Label>
+                      <div className="grid grid-cols-2 gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const halfWidth = imageDimensions.width / 2
+                            const halfHeight = imageDimensions.height / 2
+                            setCropArea({
+                              x: halfWidth / 2,
+                              y: halfHeight / 2,
+                              width: halfWidth,
+                              height: halfHeight
+                            })
+                          }}
+                        >
+                          Center 50%
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setCropArea({
+                              x: 0,
+                              y: 0,
+                              width: imageDimensions.width,
+                              height: imageDimensions.height
+                            })
+                          }}
+                        >
+                          Full Size
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Image Preview */}
@@ -498,7 +682,7 @@ export default function ImageCrop() {
                     />
                     <canvas
                       ref={canvasRef}
-                      className="absolute top-0 left-0 w-full h-full cursor-move"
+                      className="absolute top-0 left-0 w-full h-full"
                       onMouseDown={handleMouseDown}
                       onMouseMove={handleMouseMove}
                       onMouseUp={handleMouseUp}
@@ -507,13 +691,27 @@ export default function ImageCrop() {
                   </div>
 
                   {/* Crop Info */}
-                  <div className="flex justify-between items-center text-sm text-gray-600">
+                  <div className="flex justify-between items-center text-sm text-gray-600 bg-gray-50 p-3 rounded">
                     <span>
                       Crop area: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}px
                     </span>
                     <span>
                       Position: ({Math.round(cropArea.x)}, {Math.round(cropArea.y)})
                     </span>
+                    <Badge variant="outline">
+                      {((cropArea.width * cropArea.height) / (imageDimensions.width * imageDimensions.height) * 100).toFixed(1)}% of image
+                    </Badge>
+                  </div>
+
+                  {/* Instructions */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-medium text-blue-900 mb-2">How to use:</h4>
+                    <div className="text-sm text-blue-800 space-y-1">
+                      <p>• <strong>Move:</strong> Click and drag inside the crop area or use the green center handle</p>
+                      <p>• <strong>Resize:</strong> Drag the blue corner handles to adjust size</p>
+                      <p>• <strong>Precise:</strong> Use custom width/height inputs for exact dimensions</p>
+                      <p>• <strong>Presets:</strong> Choose from common aspect ratios and social media sizes</p>
+                    </div>
                   </div>
 
                   {/* Action Buttons */}
