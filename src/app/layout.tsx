@@ -14,24 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "Task Tool Hub - Professional Online Tools",
+  description: "Task Tool Hub by Taskkora - Professional web tools for image compression, resizing, cropping, format conversion, QR code generation, and text conversion.",
+  keywords: ["Task Tool Hub", "Taskkora", "image tools", "QR generator", "text converter", "online tools"],
+  authors: [{ name: "Taskkora" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Task Tool Hub - Professional Online Tools",
+    description: "Professional web tools for image processing, QR code generation, and text conversion by Taskkora",
+    siteName: "Task Tool Hub",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "Task Tool Hub - Professional Online Tools",
+    description: "Professional web tools for image processing, QR code generation, and text conversion",
   },
 };
 
