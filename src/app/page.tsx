@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { 
-  Compress, 
+  Zap, 
   Maximize2, 
   Crop, 
   FileImage, 
@@ -28,7 +28,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import imageCompression from 'browser-image-compression'
 import QRCode from 'qrcode'
 import Tesseract from 'tesseract.js'
+import { createPortal } from 'react-dom'
 import Cropper from 'react-easy-crop'
+import 'react-easy-crop/react-easy-crop.css'
 import { getCroppedImg } from '@/lib/cropImage'
 
 export default function TaskToolHub() {
@@ -396,7 +398,7 @@ export default function TaskToolHub() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 mb-8">
             <TabsTrigger value="compressor" className="flex items-center gap-2">
-              <Compress size={16} />
+              <Zap size={16} />
               <span className="hidden sm:inline">Compress</span>
             </TabsTrigger>
             <TabsTrigger value="resizer" className="flex items-center gap-2">
@@ -430,7 +432,7 @@ export default function TaskToolHub() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Compress className="text-blue-900" />
+                  <Zap className="text-blue-900" />
                   Image Compressor
                 </CardTitle>
                 <CardDescription>
