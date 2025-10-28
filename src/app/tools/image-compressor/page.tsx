@@ -32,7 +32,7 @@ interface CompressedImage {
 }
 
 // Advanced image compression algorithms
-class ImageCompressor {
+class AdvancedImageCompressor {
   static async compressImage(file: File, quality: number, maxWidth?: number, maxHeight?: number): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -197,14 +197,14 @@ export default function ImageCompressor() {
             let finalHeight = img.height
 
             if (compressionMode === 'smart') {
-              const result = await ImageCompressor.smartCompress(file)
+              const result = await AdvancedImageCompressor.smartCompress(file)
               compressedBlob = result.blob
               finalWidth = result.dimensions.width
               finalHeight = result.dimensions.height
             } else if (compressionMode === 'size') {
-              compressedBlob = await ImageCompressor.progressiveCompress(file, targetSizeKB)
+              compressedBlob = await AdvancedImageCompressor.progressiveCompress(file, targetSizeKB)
             } else {
-              compressedBlob = await ImageCompressor.compressImage(file, qualityValue, 2048, 2048)
+              compressedBlob = await AdvancedImageCompressor.compressImage(file, qualityValue, 2048, 2048)
             }
 
             clearInterval(progressInterval)

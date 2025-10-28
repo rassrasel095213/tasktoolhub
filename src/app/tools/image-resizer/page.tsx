@@ -33,7 +33,7 @@ interface ResizedImage {
 }
 
 // Advanced image resizer with multiple algorithms
-class ImageResizer {
+class AdvancedImageResizer {
   static async resizeImage(
     file: File, 
     newWidth: number, 
@@ -308,7 +308,7 @@ export default function ImageResizer() {
         }
       }, 100)
 
-      const result = await ImageResizer.smartResize(selectedFile, newWidth, newHeight)
+      const result = await AdvancedImageResizer.smartResize(selectedFile, newWidth, newHeight)
       
       clearInterval(progressInterval)
       setProgress(100)
@@ -366,7 +366,7 @@ export default function ImageResizer() {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="text-5xl mr-4">📐</div>
-              <div>
+             <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Advanced Image Resizer</h1>
                 <p className="text-gray-600 mt-2">Professional image resizing with multiple algorithms and smart optimization</p>
               </div>
