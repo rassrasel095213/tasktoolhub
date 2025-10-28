@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Upload, Download, Compress, Image as ImageIcon, Zap, Shield } from 'lucide-react'
+import { Upload, Download, FileArchive, Image as ImageIcon, Zap, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CompressedImage {
@@ -334,7 +334,7 @@ export default function ImageCompressor() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Compress className="w-5 h-5 mr-2" />
+                <FileArchive className="w-5 h-5 mr-2" />
                 Professional Image Compression
               </CardTitle>
               <CardDescription>
@@ -461,7 +461,7 @@ export default function ImageCompressor() {
                     </>
                   ) : (
                     <>
-                      <Compress className="w-4 h-4 mr-2" />
+                      <FileArchive className="w-4 h-4 mr-2" />
                       Compress Image
                     </>
                   )}
